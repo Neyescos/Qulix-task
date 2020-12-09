@@ -5,10 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using ProjectDAL.Interfaces;
+using BLL.MapProfile;
+using ProjectDAL.Modules;
+using System.Threading;
 
 namespace ProjectBLL.Services
 {
-    class EmployeeService : IEmployeeService
+    public class EmployeeService : IEmployeeService
     {
         readonly IUnitOfWork unit;
 
@@ -18,31 +22,57 @@ namespace ProjectBLL.Services
         }
         readonly MapperConfiguration config = new MapperConfiguration(mc =>
         {
-            mc.AddProfile(new MyProfile());
+            mc.AddProfile(new DTOProfile());
         });
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+                await unit.Employees.Delete(id);
+                unit.Save();
         }
 
-        public Task<EmployeeDTO> GetEmployee(int? id)
+        public async Task<EmployeeDTO> GetEmployee(int? id)
         {
-            throw new NotImplementedException();
+            var mapper = new Mapper(config);
+            var employee = await unit.Employees.Find(temp => temp.Id == id);
+            return mapper.Map<Employee, EmployeeDTO>(employee);
         }
 
-        public Task<IEnumerable<EmployeeDTO>> GetEmployees()
+        public async Task<IEnumerable<EmployeeDTO>> GetEmployees()
         {
-            throw new NotImplementedException();
+            var mapper = new Mapper(config);
+            var employees = await unit.Employees.GetAll();
+            return mapper.Map<IEnumerable<EmployeeDTO>>(employees);
         }
 
-        public Task MakeEmployee(EmployeeDTO employee)
+        public async Task MakeEmployee(EmployeeDTO employee)
         {
-            throw new NotImplementedException();
-        }
 
-        public Task UpdateEmployee(EmployeeDTO employee)
+            var result = await unit.Employees.Find(x => x.Name == employee.Name);
+
+            if (result == null)
+            {
+                var mapper = new Mapper(config);
+                unit.Employees.Create(mapper.Map<EmployeeDTO, Employee>(employee));
+                unit.Save();
+
+            }
+            else
+            {
+                bool isCancelled = true;
+                await Task.FromCanceled(new CancellationToken(isCancelled));
+            }
+        }
+        public async Task UpdateEmployee(EmployeeDTO employee)
         {
-            throw new NotImplementedException();
+            var mapper = new Mapper(config);
+            var tempUser = await unit.Employees.Get(employee.Id);
+
+
+            await Task.Run(() =>
+            {
+                unit.Employees.Update(mapper.Map<EmployeeDTO, Employee>(employee));
+                unit.Save();
+            });
         }
     }
 }

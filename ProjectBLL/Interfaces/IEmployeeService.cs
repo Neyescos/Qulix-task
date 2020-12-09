@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBLL.Interfaces
 {
-    interface IEmployeeService
+    public interface IEmployeeService
     {
         Task MakeEmployee(EmployeeDTO employee);
         Task UpdateEmployee(EmployeeDTO employee);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBLL.Interfaces
 {
-    interface ICompanyService
+    public interface ICompanyService
     {
         Task MakeCompany(CompanyDTO company);
         Task UpdateCompany(CompanyDTO company);

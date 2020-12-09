@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ProjectDAL.Interfaces
 {
-    interface IUnitOfWork:IDisposable
+    public interface IUnitOfWork:IDisposable
     {
         IRepository<Employee> Employees { get; }
         IRepository<Company> Companies { get; }

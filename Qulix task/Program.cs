@@ -4,7 +4,6 @@ namespace Qulix_task
 {
     public class Program
     {
-        EmployeeDTO employee;
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
